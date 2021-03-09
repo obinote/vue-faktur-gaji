@@ -1,96 +1,19 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex);
 
+axios.defaults.baseURL = "https://dev-bos.smartlink.id"
+
 export const store = new Vuex.Store({
   state : {
+    rekening : {},
     fakturGaji : {
-      id_karyawan: "KRY2098201001",
-      nama_karyawan: "Bu Adara Olivia",
-      tanggal_awal:"2021-01-01",
-      tanggal_akhir:"2021-01-31",
-      total_kehadiran:22,
-      total_periode:1,
-      pengaturan_gaji:[
-        {
-          id:1, 
-          jenis:"periode",
-          nama: "Gaji Pokok",
-          nominal:80000
-        },
-        {
-          id:2,
-          jenis:"kehadiran",
-          nama:"Uang Makan",
-          nominal:10000
-        },
-        {
-          id:3,
-          jenis:"periode",
-          nama:"Uang Absen",
-          nominal:12000
-        },
-        {
-          id:4,
-          jenis:"periode",
-          nama:"Uang Transport",
-          nominal:15000
-        },
-        {
-          id:5,
-          jenis:"periode",
-          nama:"Uang Snack",
-          nominal:5000
-        }
-      ],
-      pengaturan_upah:[
-        {
-          id:1,
-          nama:"mencuci",
-          nominal:200
-        },
-        {
-          id:2,
-          nama:"menyetrikan",
-          nominal:1600
-        }
-      ],
-      pengerjaan_upah:[
-        {
-          pengaturan_upah_id:2,
-          nominal:50,
-          satuan:"KG"
-        },
-        {
-          pengaturan_upah_id:1,
-          nominal:100,
-          satuan:"KG"
-        }
-      ],
-      komisi:[
-        {
-          nama:"Bonus Bulanan",
-          nominal:300000
-        },
-        {
-          nama:"Bonus Bulanan 2",
-          nominal:200000
-        }
-      ],
-      tanggungan:[
-        {
-          nama:"Denda menghilankan Barang",
-          nominal:120000,
-        }
-      ],
-      rekening:{
-        nomor:"0371200780",
-        bank:"BCA",
-        pemilik:"Mega Marcela"
-      },
-      tanggal_catat:"2020-02-02",
-      keterangan:"Gaji Bulan Januari"
+      pengaturan_gaji : [],
+      pengaturan_upah : [],
+      komisi: [],
+      tanggungan : []
     },
     beforeEdit: {
       total_kehadiran : "",
@@ -167,10 +90,10 @@ export const store = new Vuex.Store({
       return state.beforeEdit
     },
     dataFakturGaji (state) {
-      return state.fakturGaji;
+      return state.fakturGaji
     },
     listModal (state) {
-      return state.modalList;
+      return state.modalList
     },
     dataModal (state) {
       return state.activeModal
@@ -181,36 +104,36 @@ export const store = new Vuex.Store({
     detailBorongan (state) {
       return boronganId => {
         let upah = state.fakturGaji.pengerjaan_upah.find(upah => upah.pengaturan_upah_id === boronganId);
-        return `${upah.nominal}${upah.satuan}`;
+        return `${upah.nominal}${upah.satuan}`
       };
     },
     subtotalGaji (state) {
       let subTotal = state.fakturGaji.pengaturan_gaji.reduce(function(prev, cur) {
         let nominalGaji = cur.id === 1 ? parseInt(cur.nominal) * state.fakturGaji.total_periode : cur.nominal * state.fakturGaji.total_kehadiran
         
-        return prev + parseInt(nominalGaji);
-      }, 0);
+        return prev + parseInt(nominalGaji)
+      }, 0)
 
       return subTotal
     },
     subtotalUpah (state) {
       let subTotal = state.fakturGaji.pengaturan_upah.reduce(function(prev, cur) {
-        return prev + parseInt(cur.nominal);
-      }, 0);
+        return prev + parseInt(cur.nominal)
+      }, 0)
 
       return subTotal
     },
     subtotalKomisi (state) {
       let subTotal = state.fakturGaji.komisi.reduce(function(prev, cur) {
-        return prev + parseInt(cur.nominal);
-      }, 0);
+        return prev + parseInt(cur.nominal)
+      }, 0)
 
       return subTotal
     },
     subtotalTanggungan (state) {
       let subTotal = state.fakturGaji.tanggungan.reduce(function(prev, cur) {
-        return prev + parseInt(cur.nominal);
-      }, 0);
+        return prev + parseInt(cur.nominal)
+      }, 0)
 
       return subTotal
     },
@@ -220,30 +143,33 @@ export const store = new Vuex.Store({
             return gaji.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
         
-        return gaji;
+        return gaji
       }
     }
   },
   mutations: {
+    initFakturGaji(state, { data }) {
+      state.fakturGaji = data
+    },
     setBeforeEdit (state, data) {
       data.target.forEach((target, index) => {
         switch (target) {
           case "total_kehadiran":
             state.beforeEdit.total_kehadiran = data.value[index]
-            break;
+            break
           case "total_periode":
             state.beforeEdit.total_periode = data.value[index]
-            break;
+            break
           case "gaji":
             state.beforeEdit.gajiValue = data.value[index]
-            break;
+            break
           case "komisi":
             state.beforeEdit.komisi = {
               index : data.value[0],
               nominal: data.value[2],
               nama: data.value[1]
             }
-            break;
+            break
         }
       });
     },
@@ -254,16 +180,16 @@ export const store = new Vuex.Store({
       switch (data.target) {
         case "total_kehadiran":
           state.fakturGaji.total_kehadiran = data.value
-          break;
+          break
         case "total_periode":
           state.fakturGaji.total_periode = data.value
-          break;
+          break
         case "gaji":
           let dataId= state.activeModal.id.match(/\d+/)[0];
           let index = state.fakturGaji.pengaturan_gaji.findIndex(gaji => gaji.id === parseInt(dataId))
 
           state.fakturGaji.pengaturan_gaji[index].nominal = data.value
-          break;
+          break
         
       }
     },
@@ -289,5 +215,19 @@ export const store = new Vuex.Store({
     hapusTanggungan(state, { index }) {
       state.fakturGaji.tanggungan.splice(index, 1)
     },
+  },
+  actions:{
+    loadFakturGaji (contex) {
+      axios.get('/salary/inquiry')
+        .then(response => {
+          let { data } = response;
+          if (data.success === true) {
+            contex.commit('initFakturGaji', data)
+          }
+        })
+        .catch(error=>{
+          console.log(error)
+        })
+    }
   }
 })

@@ -266,7 +266,10 @@ export default {
   components: { 
     Modal,
   },
-  name: 'FakturGaji',  
+  name: 'FakturGaji',
+  created() {
+    this.$store.dispatch('loadFakturGaji')
+  },
   computed: {
     ...mapGetters([
       'dataFakturGaji',
