@@ -1,0 +1,80 @@
+.cp-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.cp-3 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.header {
+  padding-top: 8px;
+}
+
+.dash-1 {
+  /* border-top: 1px dashed #EDEDED; */
+  height: 1px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-image: repeating-linear-gradient(0deg, #EDEDED, #EDEDED 5px, transparent 5px, transparent 10px, #EDEDED 10px), 
+  repeating-linear-gradient(90deg, #EDEDED, #EDEDED 5px, transparent 5px, transparent 10px, #EDEDED 10px), 
+  repeating-linear-gradient(180deg, #EDEDED, #EDEDED 5px, transparent 5px, transparent 10px, #EDEDED 10px), 
+  repeating-linear-gradient(270deg, #EDEDED, #EDEDED 5px, transparent 5px, transparent 10px, #EDEDED 10px);
+  background-size: 2px 100%, 100% 2px, 2px 100% , 100% 2px;
+  background-position: 0 0, 0 0, 100% 0, 0 100%;
+  background-repeat: no-repeat;
+}
+
+.solid-1 {
+  border-top: 1px solid #EDEDED;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.solid-2 {
+  border-top: 12px solid #F2F5F7;
+  height: 12px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.solid-3 {
+  border-top: 24px solid #F2F5F7;
+  height: 24px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.kehadiran button {
+  margin-top: -7px;
+}
+
+.modal-header {
+  justify-content: unset;
+  align-items: baseline;
+  height: 60px;
+  padding: 8px;
+}
+
+.modal-header h5 {
+  border: 0px;
+}
+
+.modal-header .btn-close {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+}
+
+.sub-gaji-kotor {
+  color: #1BC47D;
+}
+
+.bayar-tanggungan {
+  color: red;
+}
+
+.netton-gaji{
+  color: #007bff;
+}

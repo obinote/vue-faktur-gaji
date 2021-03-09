@@ -1,4 +1,4 @@
-# test-faktur-gaji
+# Faktur Gaji Belajar Vue
 
 > A Vue.js project
 

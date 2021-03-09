@@ -1,0 +1,383 @@
+<template>
+  <div class="page-wrapper flex-center">
+    <div class="header">
+      <h5 id="header-title">Faktur Gaji</h5>
+    </div>
+    <b-container class="bv-example-row bv-example-row-flex-cols">
+      <b-row class="text-left" align-v="start">
+        <b-col sm="12" class="solid-1"></b-col>
+        <!-- Pegawai  ========================================================================================== -->
+        <b-col sm="12" class="pegawai-view">
+          <h5>{{dataFakturGaji.nama_karyawan}}</h5>
+          <h6 class="text-muted mb">{{`${dataFakturGaji.tanggal_awal} - ${dataFakturGaji.tanggal_akhir}`}}</h6>
+        </b-col>
+        <b-col sm="12" class="dash-1"></b-col>
+        <!-- Kehadiran  ========================================================================================== -->
+        <b-col sm="12" class="kehadiran">
+          <b-row class="cp-3">
+            <b-col class="text-muted mb m-0">
+              Masuk {{dataFakturGaji.total_kehadiran > 0 ? dataFakturGaji.total_kehadiran : "0"}} Hari
+            </b-col>
+            <b-col class="text-right">
+              <b-button variant="link" class="p-0" @click="showModal('ubah-kehadiran')">Ubah Kehadiran</b-button>
+            </b-col>
+          </b-row>
+        </b-col>
+        <!-- Gaji  ========================================================================================== -->
+        <b-col sm="12" class="solid-2"></b-col>
+        <b-col sm="12" class="gaji">
+          <h5 class="text-left cp-3">Gaji</h5>
+          <b-container
+            v-for="gaji in dataFakturGaji.pengaturan_gaji" :key="`gaji-${gaji.id}`"
+          >
+            <b-row align-v="center" class="cp-1">
+              <b-col class="text-left p-0">
+                <b-card-text class="m-0">
+                  {{gaji.nama}}
+                </b-card-text>
+                <b-card-text class="small text-muted">
+                  {{`${formatNumber(gaji.nominal)} x ${gaji.id === 1 ? dataFakturGaji.total_periode : dataKehadiran(dataFakturGaji.total_kehadiran)} ${gaji.id === 1 ? "periode" : "kehadiran"}`}}
+                </b-card-text>
+              </b-col>
+              <b-col class="text-right">
+                <b-row>
+                  <b-col class="p-0">
+                    {{ gaji.id === 1 ? (gaji.nominal * dataFakturGaji.total_periode).toLocaleString() : (gaji.nominal * dataFakturGaji.total_kehadiran).toLocaleString() }}
+                    <b-button 
+                      variant="link" 
+                      class="p-0" 
+                      @click="showModal(`modal-gaji-${gaji.id}`)">
+                      <b-icon-pencil-square></b-icon-pencil-square >
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-col>
+            </b-row>
+          </b-container>
+        </b-col>
+        <b-col sm="12" class="dash-1"></b-col>
+        <b-col sm="12" class="sub-total-gaji cp-3">
+          <b-row>
+            <b-col>
+              <h5>Subtotal Gaji</h5>
+            </b-col>
+            <b-col class="text-right">
+              <h5>{{displaySubtotalGaji}}</h5>
+            </b-col>
+          </b-row>
+        </b-col>
+        <b-col sm="12" class="solid-2"></b-col>
+        <!-- Borongan  ========================================================================================== -->
+        <b-col sm="12" class="upah-borongan cp-3">
+          <h5>Upah Borongan</h5>
+        </b-col>
+        <b-col sm="12" class="solid-1"></b-col>
+        <b-col sm="12" class="item-borongan">
+          <b-container v-for="borongan in dataFakturGaji.pengaturan_upah" :key="`borongan-${borongan.id}`">
+            <b-row class="cp-1">
+              <b-col class="text-left p-0">
+                <b-card-text class="m-0">
+                  {{borongan.nama}}
+                </b-card-text>
+                <b-card-text class="small text-muted">
+                  {{detailBorongan(borongan.id)}}
+                </b-card-text>
+              </b-col>
+              <b-col class="text-right">
+                <b-row>
+                  <b-col class="p-0">
+                    {{formatNumber(borongan.nominal)}}
+                    <b-icon-slash-circle style="color: lightgrey;"></b-icon-slash-circle>
+                  </b-col>
+                </b-row>
+              </b-col>
+            </b-row>
+          </b-container>
+        </b-col>
+        <b-col sm="12" class="dash-1"></b-col>
+        <b-col sm="12" class="sub-total-upah-borongan cp-3">
+          <b-row>
+            <b-col>
+              <h5>Subtotal Upah</h5>
+            </b-col>
+            <b-col class="text-right">
+              <h5>{{displaySubtotalUpah}}</h5>
+            </b-col>
+          </b-row>
+        </b-col>
+        <b-col sm="12" class="solid-2"></b-col>
+        <!-- Komisi  ========================================================================================== -->
+        <b-col sm="12" class="komisi cp-3">
+          <h5>Komisi</h5>
+        </b-col>
+        <b-col sm="12" class="solid-1"></b-col>
+        <b-col sm="12" class="item-komisi">
+          <b-container>
+            <b-row>
+              <b-col class="p-0">
+                <b-button 
+                  variant="link" 
+                  class="p-0" 
+                  name="tambah"
+                  @click="showModal(`modal-komisi`, -1)">
+                  <b-icon-plus-circle></b-icon-plus-circle >Tambah komisi lain...
+                </b-button>
+              </b-col>
+            </b-row>
+            <b-row class="cp-1" v-for="(komisi, index) in dataFakturGaji.komisi" :key="`komisi-${index}`">
+              <b-col class="text-left p-0">
+                <b-card-text class="m-0">
+                  {{komisi.nama}}
+                </b-card-text>
+              </b-col>
+              <b-col class="text-right">
+                <b-row>
+                  <b-col class="p-0">
+                    {{formatNumber(komisi.nominal)}} 
+                    <b-button 
+                      variant="link" 
+                      class="p-0"
+                      @click="showModal(`modal-komisi`, index)">
+                      <b-icon-pencil-square></b-icon-pencil-square >
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-col>
+            </b-row>
+          </b-container>
+        </b-col>
+        <b-col sm="12" class="dash-1"></b-col>
+        <b-col sm="12" class="sub-total-komisi cp-3">
+          <b-row>
+            <b-col>
+              <h5>Subtotal Komisi</h5>
+            </b-col>
+            <b-col class="text-right">
+              <h5>{{displaySubtotalKomisi}}</h5>
+            </b-col>
+          </b-row>
+        </b-col>
+        <b-col sm="12" class="solid-3"></b-col>
+        <!-- Sub Gaji Kotor  ===================================================================================== -->
+        <b-col sm="12" class="sub-gaji-kotor cp-3">
+          <b-row>
+            <b-col>
+              <h5>Total Gaji Kotor</h5>
+            </b-col>
+            <b-col class="text-right">
+              <h5>{{displayCountGaji}}</h5>
+            </b-col>
+          </b-row>
+        </b-col>
+        <b-col sm="12" class="solid-2"></b-col>
+        <!-- Tanggungan  ========================================================================================== -->
+        <b-col sm="12" class="tanggungan cp-3">
+          <h5>Tanggungan</h5>
+          <b-card-text class="small text-muted">
+            {{`Karyawan ini memiliki tanggungan ${displaySubTotalTanggungan}`}}
+          </b-card-text>
+        </b-col>
+        <b-col sm="12" class="solid-1"></b-col>
+        <b-col sm="12" class="item-tanggungan">
+          <b-container>
+            <b-row>
+              <b-col class="p-0">
+                <b-button 
+                  variant="link" 
+                  class="p-0" 
+                  name="tambah"
+                  @click="showModal(`modal-tanggungan`, -1)">
+                  <b-icon-plus-circle></b-icon-plus-circle >Tambah pembayaran tanggungan...
+                </b-button>
+              </b-col>
+            </b-row>
+            <b-row class="cp-1" v-for="(tanggungan, index) in dataFakturGaji.tanggungan" :key="`tanggungan-${index}`">
+              <b-col class="text-left p-0">
+                <b-card-text class="m-0">
+                  {{tanggungan.nama}}
+                </b-card-text>
+                <b-card-text class="small text-muted">
+                  {{tanggungan.keterangan}}
+                </b-card-text>
+              </b-col>
+              <b-col class="text-right bayar-tanggungan">
+                <b-row>
+                  <b-col class="p-0">
+                    {{formatNumber(tanggungan.nominal)}} 
+                    <b-button 
+                      variant="link" 
+                      class="p-0"
+                      @click="showModal(`modal-tanggungan`, index)">
+                      <b-icon-pencil-square class="bayar-tanggungan"></b-icon-pencil-square >
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-col>
+            </b-row>
+          </b-container>
+        </b-col>
+        <b-col sm="12" class="dash-1"></b-col>
+        <b-col sm="12" class="sub-total-tanggungan cp-3">
+          <b-row>
+            <b-col>
+              <h5>Tanggungan Dibayar</h5>
+            </b-col>
+            <b-col class="text-right bayar-tanggungan">
+              <h5>{{displaySubTotalTanggungan}}</h5>
+            </b-col>
+          </b-row>
+        </b-col>
+        <b-col sm="12" class="solid-2"></b-col>
+         <b-col sm="12" class="netto-gaji cp-3">
+          <b-container>
+            <b-row>
+              <b-col class="p-0 text-left netton-gaji">
+                <h5>Total Gaji Bersih<b-icon icon="check-circle-fill" variant="success"></b-icon></h5>
+              </b-col>
+              <b-col class="p-0 text-right netton-gaji">
+                <h5>{{displayNetGaji}}</h5>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col class="p-0">
+                <b-card-text class="small text-muted">
+                  {{`Nominal akhir yang diterima karyawan setelah ditambah komisi dikurangi pembayaran tanggungan (jika ada).`}}
+                </b-card-text>
+              </b-col>
+            </b-row>
+          </b-container>
+        </b-col>
+        <b-col sm="12" class="p-2"></b-col>
+        <b-col sm="12" class="detail-faktur">
+          <b-button block variant="primary">Berikutnya</b-button>
+        </b-col>
+      </b-row>
+    </b-container>
+    <modal></modal>
+  </div>
+</template>
+
+<script>
+import Modal from './Modal.vue'
+import { mapGetters } from 'vuex'
+
+
+export default {
+  components: { 
+    Modal,
+  },
+  name: 'FakturGaji',  
+  computed: {
+    ...mapGetters([
+      'dataFakturGaji',
+      'detailBorongan',
+      'subtotalGaji',
+      'subtotalUpah',
+      'subtotalKomisi',
+      'listModal',
+      'dataModal',
+      'subtotalTanggungan',
+      'formatNumber'
+    ]),
+    displaySubtotalKomisi () {
+      return `Rp ${this.formatNumber(this.subtotalKomisi)}`
+    },
+    displaySubtotalUpah () {
+      return `Rp ${this.formatNumber(this.subtotalUpah)}`
+    },
+    displaySubtotalGaji () {
+      return `Rp ${this.formatNumber(this.subtotalGaji)}`
+    },
+    displaySubTotalTanggungan () {
+      return `(-) Rp ${this.formatNumber(this.subtotalTanggungan)}`
+    },
+    displayNetGaji () {
+      let netGaji = this.subtotalGaji + this.subtotalUpah + this.subtotalKomisi - this.subtotalTanggungan;
+      return `Rp ${this.formatNumber(netGaji)}`
+    },
+    countGaji() {
+      return this.subtotalGaji + this.subtotalKomisi + this.subtotalUpah
+    },
+    displayCountGaji () {
+      return `Rp ${this.formatNumber(this.countGaji)}`
+    },
+    dataKehadiran(state) {
+      return kehadiran => {
+        return kehadiran > 0 ? kehadiran : 0;
+      }
+    }
+  },
+  methods: {
+    showModal(modalId, dataIndex) {
+      let modal = this.listModal.find(modal => modal.id === modalId);
+
+      let value = {
+        nominal  : null,
+        periode  : null,
+        kehadiran : null
+      }
+      switch (modalId) {
+        case "modal-gaji-1":
+          let dataId= modalId.match(/\d+/)[0];
+          let gaji = this.dataFakturGaji.pengaturan_gaji.find(gaji => gaji.id === parseInt(dataId))
+          value = {
+            nominal  : gaji.nominal,
+            periode  : this.dataFakturGaji.total_periode,
+            kehadiran : this.dataFakturGaji.total_kehadiran,
+          }
+          break;
+        case "modal-gaji-2":
+        case "modal-gaji-3":
+        case "modal-gaji-4":
+        case "modal-gaji-5":
+          dataId = modalId.match(/\d+/)[0];
+          gaji = this.dataFakturGaji.pengaturan_gaji.find(gaji => gaji.id === parseInt(dataId))
+          value = {
+            nominal  : gaji.nominal,
+            kehadiran : this.dataFakturGaji.total_kehadiran,
+          }
+          break;
+      
+        case "ubah-kehadiran":
+          value = {
+            nominal  : 0,
+            periode  : 0,
+            kehadiran : this.dataFakturGaji.total_kehadiran,
+          }
+          break;
+        case "modal-komisi":
+          let dataKomisi = this.dataFakturGaji.komisi[dataIndex];
+          value = {
+            index : dataIndex,
+            nominal: dataIndex === -1 ? 0 : dataKomisi.nominal,
+            nama: dataIndex === -1 ? "" : dataKomisi.nama
+          }
+          break;
+        case "modal-tanggungan":
+          let dataTanggungan = this.dataFakturGaji.tanggungan[dataIndex];
+          value = {
+            index : dataIndex,
+            nominal: dataIndex === -1 ? 0 : dataTanggungan.nominal,
+            nama: dataIndex === -1 ? "" : dataTanggungan.nama,
+            keterangan: dataIndex === -1 ? "" : dataTanggungan.keterangan
+          }
+          break;
+      }
+      let data = {
+        ...modal,
+        value
+      }
+
+      this.$store.commit('setActiveModal', data)
+
+      setTimeout(() => {
+        this.$bvModal.show(modal.id);
+      })
+    },
+  }
+}
+</script>
+
+<style>
+  @import '../assets/style/faktur-gaji.css';
+</style>
