@@ -9,6 +9,9 @@ axios.defaults.baseURL = "https://dev-bos.smartlink.id"
 export const store = new Vuex.Store({
   state : {
     rekening : {},
+    pembayaran : {
+      listBank : []
+    },
     fakturGaji : {
       pengaturan_gaji : [],
       pengaturan_upah : [],
@@ -92,6 +95,9 @@ export const store = new Vuex.Store({
     dataFakturGaji (state) {
       return state.fakturGaji
     },
+    dataPembayaran (state) {
+      return state.pembayaran
+    },
     listModal (state) {
       return state.modalList
     },
@@ -137,6 +143,12 @@ export const store = new Vuex.Store({
 
       return subTotal
     },
+    brutoGaji (state, getters) {
+      return getters.subtotalGaji + getters.subtotalKomisi + getters.subtotalUpah
+    },
+    netGaji (state, getters) {
+      return getters.brutoGaji - getters.subtotalTanggungan;
+    },
     formatNumber (state) {
       return gaji => {
         if (gaji !== '' || gaji !== undefined || gaji !== 0 || gaji !== '0' || gaji !== null) {
@@ -150,6 +162,17 @@ export const store = new Vuex.Store({
   mutations: {
     initFakturGaji(state, { data }) {
       state.fakturGaji = data
+    },
+    clearDataRekening(state) {
+      state.pembayaran.listBank = []
+    },
+    dataRekening(state, { data }) {
+      data.forEach(data => {
+        state.pembayaran.listBank.push({
+          ...data,
+          value : JSON.stringify(data)
+        })
+      });
     },
     setBeforeEdit (state, data) {
       data.target.forEach((target, index) => {
@@ -215,6 +238,16 @@ export const store = new Vuex.Store({
     hapusTanggungan(state, { index }) {
       state.fakturGaji.tanggungan.splice(index, 1)
     },
+    setPembayaran(state, { value, target }) {
+      switch (target) {
+        case "rekening":
+          state.pembayaran.rekening = JSON.parse(value)
+          break;
+      
+        default:
+          break;
+      }
+    }
   },
   actions:{
     loadFakturGaji (contex) {
@@ -225,7 +258,40 @@ export const store = new Vuex.Store({
             contex.commit('initFakturGaji', data)
           }
         })
-        .catch(error=>{
+        .catch(error => {
+          console.log(error)
+        })
+    },
+    loadRekening (contex) {
+      contex.commit('clearDataRekening')
+      axios.get('/salary/bank')
+        .then(response => {
+          let { data } = response;
+          if (data.success === true) {
+            contex.commit('dataRekening', data)
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
+    pembayaran (contex, payload) {
+      let posted = {
+        ...this.getters.dataFakturGaji,
+        ...payload
+      }
+
+      let config = {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+
+      axios.post('/salaryi/save', JSON.stringify(posted), config)
+        .then(response => {
+          context.commit('addTodo', response.data)
+        })
+        .catch(error => {
           console.log(error)
         })
     }

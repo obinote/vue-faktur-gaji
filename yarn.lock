@@ -6848,6 +6848,11 @@ vue@^2.5.2:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
   integrity sha512-uhmLFETqPPNyuLLbsKz6ioJ4q7AZHzD8ZVFNATNyICSZouqP2Sz0rotWQC8UNBF6VGSCs5abnKJoStA6JbCbfg==
 
+vuex-extensions@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/vuex-extensions/-/vuex-extensions-1.1.5.tgz#d1664aabdc720057c945993324de9bc34d871487"
+  integrity sha512-1Jfi8o6coel3jj20k6SaEtinddzS0jEG41lyyWmodAorXoN85AzuYa4oou71e99B6V+Y+gSVUysa3yHVhWpTrQ==
+
 vuex@^3.6.2:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.6.2.tgz#236bc086a870c3ae79946f107f16de59d5895e71"

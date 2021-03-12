@@ -12,9 +12,9 @@
             <b-form-input 
               v-if="visible === true"
               type="number" 
-              v-model="dataModal.value.nominal" 
+              v-model="ACTIVE_MODAL.value.nominal" 
               @blur="onBlurNumber"
-              @change="handleInputChange($event, 'gaji')">
+              @change="handleInputChange($event, 'gaji_pokok')">
             </b-form-input>
             <b-form-input 
               v-if="visible === false"
@@ -28,7 +28,7 @@
         <b-col class="p-1 text-center" sm="1">X</b-col>
         <b-col class="p-1">
           <b-input-group append="Periode">
-            <b-form-input type="number" v-model="dataModal.value.periode" @change="handleInputChange($event, 'total_periode')"></b-form-input>
+            <b-form-input type="number" v-model="ACTIVE_MODAL.value.periode" @change="handleInputChange($event, 'total_periode')"></b-form-input>
           </b-input-group>
         </b-col>
       </b-row>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from "vuex"
 
 export default {
   name: 'gaji-pokok',
@@ -60,40 +60,43 @@ export default {
   },
   computed:{
     ...mapGetters([
-      'dataModal',
+      'ACTIVE_MODAL',
       'formatNumber'
     ]),
     gajiFormated() {
-      let gaji = this.dataModal.value.nominal
+      let gaji = this.ACTIVE_MODAL.value.nominal
 
       return this.formatNumber(gaji);
     },
     countGaji(){
-      let totalGaji = this.dataModal.value.nominal * this.dataModal.value.periode
+      let totalGaji = this.ACTIVE_MODAL.value.nominal * this.ACTIVE_MODAL.value.periode
 
       return `Rp ${this.formatNumber(totalGaji)}`
     }
   },
   methods: {
+    ...mapActions({
+      onChangeModalInput: 'onChangeModalInput',
+    }),
     handleInputChange (event, target) {
-      this.$store.commit('onChangeInput', {
-        value: event,
-        target
+      this.onChangeModalInput({
+        value: [event],
+        target: [target],
       })
     },
     onBlurNumber() {
     	this.visible = false;
-      this.temp = this.dataModal.value.nominal;
-      this.$store.commit('onChangeInput', {
-        value: this.formatNumber(this.dataModal.value.nominal),
-        target: 'gaji',
+      this.temp = this.ACTIVE_MODAL.value.nominal;
+      this.onChangeModalInput({
+        value: [this.formatNumber(this.ACTIVE_MODAL.value.nominal)],
+        target: ['gaji_pokok'],
       })
     },
     onFocusText() {
     	this.visible = true;
-      this.$store.commit('onChangeInput', {
-        value: this.temp,
-        target: 'gaji',
+      this.onChangeModalInput({
+        value: [this.temp],
+        target: ['gaji_pokok'],
       })
     },
   }

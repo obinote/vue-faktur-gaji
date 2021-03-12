@@ -3,9 +3,9 @@
 import Vue from 'vue'
 import App from './App'
 import VueRouter from 'vue-router'
-import { store } from './store/store'
+import store from './store/index'
 import routes from './routes'
-import { BootstrapVueIcons, BootstrapVue } from 'bootstrap-vue'
+import { BootstrapVueIcons, BootstrapVue, FormPlugin, FormDatepickerPlugin } from 'bootstrap-vue'
 import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css'
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
@@ -16,6 +16,8 @@ Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
+Vue.use(FormPlugin)
+Vue.use(FormDatepickerPlugin)
 
 const router = new VueRouter({
   routes,

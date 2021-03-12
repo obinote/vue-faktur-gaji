@@ -8,15 +8,15 @@
         <b-col sm="12" class="solid-1"></b-col>
         <!-- Pegawai  ========================================================================================== -->
         <b-col sm="12" class="pegawai-view">
-          <h5>{{dataFakturGaji.nama_karyawan}}</h5>
-          <h6 class="text-muted mb">{{`${dataFakturGaji.tanggal_awal} - ${dataFakturGaji.tanggal_akhir}`}}</h6>
+          <h5>{{FAKTUR_GAJI.nama_karyawan}}</h5>
+          <h6 class="text-muted mb">{{`${FAKTUR_GAJI.tanggal_awal} - ${FAKTUR_GAJI.tanggal_akhir}`}}</h6>
         </b-col>
         <b-col sm="12" class="dash-1"></b-col>
         <!-- Kehadiran  ========================================================================================== -->
         <b-col sm="12" class="kehadiran">
           <b-row class="cp-3">
             <b-col class="text-muted mb m-0">
-              Masuk {{dataFakturGaji.total_kehadiran > 0 ? dataFakturGaji.total_kehadiran : "0"}} Hari
+              Masuk {{FAKTUR_GAJI.total_kehadiran > 0 ? FAKTUR_GAJI.total_kehadiran : "0"}} Hari
             </b-col>
             <b-col class="text-right">
               <b-button variant="link" class="p-0" @click="showModal('ubah-kehadiran')">Ubah Kehadiran</b-button>
@@ -28,7 +28,7 @@
         <b-col sm="12" class="gaji">
           <h5 class="text-left cp-3">Gaji</h5>
           <b-container
-            v-for="gaji in dataFakturGaji.pengaturan_gaji" :key="`gaji-${gaji.id}`"
+            v-for="gaji in FAKTUR_GAJI.pengaturan_gaji" :key="`gaji-${gaji.id}`"
           >
             <b-row align-v="center" class="cp-1">
               <b-col class="text-left p-0">
@@ -36,13 +36,13 @@
                   {{gaji.nama}}
                 </b-card-text>
                 <b-card-text class="small text-muted">
-                  {{`${formatNumber(gaji.nominal)} x ${gaji.id === 1 ? dataFakturGaji.total_periode : dataKehadiran(dataFakturGaji.total_kehadiran)} ${gaji.id === 1 ? "periode" : "kehadiran"}`}}
+                  {{`${formatNumber(gaji.nominal)} x ${gaji.id === 1 ? FAKTUR_GAJI.total_periode : dataKehadiran(FAKTUR_GAJI.total_kehadiran)} ${gaji.id === 1 ? "periode" : "kehadiran"}`}}
                 </b-card-text>
               </b-col>
               <b-col class="text-right">
                 <b-row>
                   <b-col class="p-0">
-                    {{ gaji.id === 1 ? (gaji.nominal * dataFakturGaji.total_periode).toLocaleString() : (gaji.nominal * dataFakturGaji.total_kehadiran).toLocaleString() }}
+                    {{ gaji.id === 1 ? (gaji.nominal * FAKTUR_GAJI.total_periode).toLocaleString() : (gaji.nominal * FAKTUR_GAJI.total_kehadiran).toLocaleString() }}
                     <b-button 
                       variant="link" 
                       class="p-0" 
@@ -62,7 +62,7 @@
               <h5>Subtotal Gaji</h5>
             </b-col>
             <b-col class="text-right">
-              <h5>{{displaySubtotalGaji}}</h5>
+              <h5>{{`Rp ${this.formatNumber(this.SUB_TOTAL_GAJI)}`}}</h5>
             </b-col>
           </b-row>
         </b-col>
@@ -73,7 +73,7 @@
         </b-col>
         <b-col sm="12" class="solid-1"></b-col>
         <b-col sm="12" class="item-borongan">
-          <b-container v-for="borongan in dataFakturGaji.pengaturan_upah" :key="`borongan-${borongan.id}`">
+          <b-container v-for="borongan in FAKTUR_GAJI.pengaturan_upah" :key="`borongan-${borongan.id}`">
             <b-row class="cp-1">
               <b-col class="text-left p-0">
                 <b-card-text class="m-0">
@@ -101,7 +101,7 @@
               <h5>Subtotal Upah</h5>
             </b-col>
             <b-col class="text-right">
-              <h5>{{displaySubtotalUpah}}</h5>
+              <h5>{{`Rp ${this.formatNumber(this.SUB_TOTAL_UPAH)}`}}</h5>
             </b-col>
           </b-row>
         </b-col>
@@ -124,7 +124,7 @@
                 </b-button>
               </b-col>
             </b-row>
-            <b-row class="cp-1" v-for="(komisi, index) in dataFakturGaji.komisi" :key="`komisi-${index}`">
+            <b-row class="cp-1" v-for="(komisi, index) in FAKTUR_GAJI.komisi" :key="`komisi-${index}`">
               <b-col class="text-left p-0">
                 <b-card-text class="m-0">
                   {{komisi.nama}}
@@ -153,7 +153,7 @@
               <h5>Subtotal Komisi</h5>
             </b-col>
             <b-col class="text-right">
-              <h5>{{displaySubtotalKomisi}}</h5>
+              <h5>{{`Rp ${this.formatNumber(this.SUB_TOTAL_KOMISI)}`}}</h5>
             </b-col>
           </b-row>
         </b-col>
@@ -165,7 +165,7 @@
               <h5>Total Gaji Kotor</h5>
             </b-col>
             <b-col class="text-right">
-              <h5>{{displayCountGaji}}</h5>
+              <h5>{{`Rp ${this.formatNumber(this.BRUTO_GAJI)}`}}</h5>
             </b-col>
           </b-row>
         </b-col>
@@ -174,7 +174,7 @@
         <b-col sm="12" class="tanggungan cp-3">
           <h5>Tanggungan</h5>
           <b-card-text class="small text-muted">
-            {{`Karyawan ini memiliki tanggungan ${displaySubTotalTanggungan}`}}
+            {{`Karyawan ini memiliki tanggungan Rp ${this.formatNumber(SUB_TOTAL_TANGGUNGAN)}`}}
           </b-card-text>
         </b-col>
         <b-col sm="12" class="solid-1"></b-col>
@@ -191,7 +191,7 @@
                 </b-button>
               </b-col>
             </b-row>
-            <b-row class="cp-1" v-for="(tanggungan, index) in dataFakturGaji.tanggungan" :key="`tanggungan-${index}`">
+            <b-row class="cp-1" v-for="(tanggungan, index) in FAKTUR_GAJI.tanggungan" :key="`tanggungan-${index}`">
               <b-col class="text-left p-0">
                 <b-card-text class="m-0">
                   {{tanggungan.nama}}
@@ -223,7 +223,7 @@
               <h5>Tanggungan Dibayar</h5>
             </b-col>
             <b-col class="text-right bayar-tanggungan">
-              <h5>{{displaySubTotalTanggungan}}</h5>
+              <h5>{{`(-) Rp ${this.formatNumber(SUB_TOTAL_TANGGUNGAN)}`}}</h5>
             </b-col>
           </b-row>
         </b-col>
@@ -235,7 +235,7 @@
                 <h5>Total Gaji Bersih<b-icon icon="check-circle-fill" variant="success"></b-icon></h5>
               </b-col>
               <b-col class="p-0 text-right netton-gaji">
-                <h5>{{displayNetGaji}}</h5>
+                <h5>{{`Rp ${this.formatNumber(NET_GAJI)}`}}</h5>
               </b-col>
             </b-row>
             <b-row>
@@ -249,7 +249,9 @@
         </b-col>
         <b-col sm="12" class="p-2"></b-col>
         <b-col sm="12" class="detail-faktur">
-          <b-button block variant="primary">Berikutnya</b-button>
+          <router-link :to="{ name: 'Pembayaran' }">
+            <b-button block variant="primary">Berikutnya</b-button>
+          </router-link>
         </b-col>
       </b-row>
     </b-container>
@@ -258,9 +260,8 @@
 </template>
 
 <script>
-import Modal from './Modal.vue'
-import { mapGetters } from 'vuex'
-
+import Modal from './modal/Modal.vue'
+import { mapGetters, mapActions } from "vuex"
 
 export default {
   components: { 
@@ -268,42 +269,23 @@ export default {
   },
   name: 'FakturGaji',
   created() {
-    this.$store.dispatch('loadFakturGaji')
+    this.loadFakturGaji()
   },
   computed: {
     ...mapGetters([
-      'dataFakturGaji',
+      'ACTIVE_MODAL',
+      'FAKTUR_GAJI',
+      'LIST_BANK',
+      'LIST_MODAL',
+      'BRUTO_GAJI',
+      'NET_GAJI',
+      'SUB_TOTAL_GAJI',
+      'SUB_TOTAL_KOMISI',
+      'SUB_TOTAL_TANGGUNGAN',
+      'SUB_TOTAL_UPAH',
+      'formatNumber',
       'detailBorongan',
-      'subtotalGaji',
-      'subtotalUpah',
-      'subtotalKomisi',
-      'listModal',
-      'dataModal',
-      'subtotalTanggungan',
-      'formatNumber'
     ]),
-    displaySubtotalKomisi () {
-      return `Rp ${this.formatNumber(this.subtotalKomisi)}`
-    },
-    displaySubtotalUpah () {
-      return `Rp ${this.formatNumber(this.subtotalUpah)}`
-    },
-    displaySubtotalGaji () {
-      return `Rp ${this.formatNumber(this.subtotalGaji)}`
-    },
-    displaySubTotalTanggungan () {
-      return `(-) Rp ${this.formatNumber(this.subtotalTanggungan)}`
-    },
-    displayNetGaji () {
-      let netGaji = this.subtotalGaji + this.subtotalUpah + this.subtotalKomisi - this.subtotalTanggungan;
-      return `Rp ${this.formatNumber(netGaji)}`
-    },
-    countGaji() {
-      return this.subtotalGaji + this.subtotalKomisi + this.subtotalUpah
-    },
-    displayCountGaji () {
-      return `Rp ${this.formatNumber(this.countGaji)}`
-    },
     dataKehadiran(state) {
       return kehadiran => {
         return kehadiran > 0 ? kehadiran : 0;
@@ -311,8 +293,12 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      loadFakturGaji: 'loadFakturGaji',
+      setActiveModal: 'setActiveModal'
+    }),
     showModal(modalId, dataIndex) {
-      let modal = this.listModal.find(modal => modal.id === modalId);
+      let modal = this.LIST_MODAL.find(modal => modal.id === modalId);
 
       let value = {
         nominal  : null,
@@ -322,11 +308,11 @@ export default {
       switch (modalId) {
         case "modal-gaji-1":
           let dataId= modalId.match(/\d+/)[0];
-          let gaji = this.dataFakturGaji.pengaturan_gaji.find(gaji => gaji.id === parseInt(dataId))
+          let gaji = this.FAKTUR_GAJI.pengaturan_gaji.find(gaji => gaji.id === parseInt(dataId))
           value = {
             nominal  : gaji.nominal,
-            periode  : this.dataFakturGaji.total_periode,
-            kehadiran : this.dataFakturGaji.total_kehadiran,
+            periode  : this.FAKTUR_GAJI.total_periode,
+            kehadiran : this.FAKTUR_GAJI.total_kehadiran,
           }
           break;
         case "modal-gaji-2":
@@ -334,10 +320,10 @@ export default {
         case "modal-gaji-4":
         case "modal-gaji-5":
           dataId = modalId.match(/\d+/)[0];
-          gaji = this.dataFakturGaji.pengaturan_gaji.find(gaji => gaji.id === parseInt(dataId))
+          gaji = this.FAKTUR_GAJI.pengaturan_gaji.find(gaji => gaji.id === parseInt(dataId))
           value = {
             nominal  : gaji.nominal,
-            kehadiran : this.dataFakturGaji.total_kehadiran,
+            kehadiran : this.FAKTUR_GAJI.total_kehadiran,
           }
           break;
       
@@ -345,11 +331,11 @@ export default {
           value = {
             nominal  : 0,
             periode  : 0,
-            kehadiran : this.dataFakturGaji.total_kehadiran,
+            kehadiran : this.FAKTUR_GAJI.total_kehadiran,
           }
           break;
         case "modal-komisi":
-          let dataKomisi = this.dataFakturGaji.komisi[dataIndex];
+          let dataKomisi = this.FAKTUR_GAJI.komisi[dataIndex];
           value = {
             index : dataIndex,
             nominal: dataIndex === -1 ? 0 : dataKomisi.nominal,
@@ -357,7 +343,7 @@ export default {
           }
           break;
         case "modal-tanggungan":
-          let dataTanggungan = this.dataFakturGaji.tanggungan[dataIndex];
+          let dataTanggungan = this.FAKTUR_GAJI.tanggungan[dataIndex];
           value = {
             index : dataIndex,
             nominal: dataIndex === -1 ? 0 : dataTanggungan.nominal,
@@ -371,7 +357,7 @@ export default {
         value
       }
 
-      this.$store.commit('setActiveModal', data)
+      this.setActiveModal(data)
 
       setTimeout(() => {
         this.$bvModal.show(modal.id);

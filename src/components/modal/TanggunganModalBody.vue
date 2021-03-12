@@ -8,9 +8,10 @@
             v-model="namaTanggungan" 
             placeholder="Nama Tanggungan" 
             id="ubah-nama-tanggungan"
+            autocomplete="off"
             :readonly="getIndexData !== -1"
             debounce="200"
-            @change="handleInputChange($event, 'nama')">
+            @update="handleInputChange($event, 'nama')">
           ></b-form-input>
         </b-col>
       </b-row>
@@ -42,10 +43,11 @@
           <b-form-input 
             v-model="keteranganTanggungan" 
             debounce="200"
+            autocomplete="off"
             placeholder="Keterangan" 
             :readonly="getIndexData !== -1"
             id="ubah-keterangan"
-            @change="handleInputChange($event, 'keterangan')">
+            @update="handleInputChange($event, 'keterangan')">
           ></b-form-input>
         </b-col>
       </b-row>
@@ -54,7 +56,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from "vuex"
 
 export default {
   name: 'tanggungan-modal-body',
@@ -69,17 +71,17 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'dataModal',
+      'ACTIVE_MODAL',
       'formatNumber'
     ]),
     getIndexData () {
-      return this.dataModal.value.index
+      return this.ACTIVE_MODAL.value.index
     },
     tanggunganFormated () {
       if (this.getIndexData === -1) {
         return this.formatNumber(this.temp);
       }
-      return this.formatNumber(this.dataModal.value.nominal)
+      return this.formatNumber(this.ACTIVE_MODAL.value.nominal)
     },
     namaTanggungan: {
       get() {
@@ -87,7 +89,7 @@ export default {
           return this.nama;
         }
   
-        return this.dataModal.value.nama
+        return this.ACTIVE_MODAL.value.nama
       },
       set(newValue) {
         this.nama = newValue
@@ -99,7 +101,7 @@ export default {
           return this.nominal;
         }
 
-        return this.dataModal.value.nominal
+        return this.ACTIVE_MODAL.value.nominal
       },
       set(newValue) {
         this.nominal = newValue
@@ -111,7 +113,7 @@ export default {
           return this.keterangan;
         }
   
-        return this.dataModal.value.keterangan ? this.dataModal.value.keterangan : " "
+        return this.ACTIVE_MODAL.value.keterangan ? this.ACTIVE_MODAL.value.keterangan : " "
       },
       set(newValue) {
         if (this.getIndexData === -1) {
@@ -121,6 +123,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      tambahTanggungan: 'tambahTanggungan',
+    }),
     handleInputChange (event, target) {
       if (this.getIndexData === -1) {
         this[target] = event;
@@ -136,11 +141,13 @@ export default {
       this.nominal = this.temp;
     },
     handleSimpan() {
-      this.$store.commit('tambahTanggungan', {
-        nama      : this.nama,
-        nominal   : this.temp,
-        keterangan: this.keterangan
-      })
+      if (this.nama && this.temp > 0) {
+        this.tambahTanggungan({
+          nama      : this.nama,
+          nominal   : this.temp,
+          keterangan: this.keterangan
+        })
+      }
     }
   }
 }

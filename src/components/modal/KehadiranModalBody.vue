@@ -13,21 +13,29 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from "vuex"
 
 export default {
   name: 'kehadiran-body',
   computed:{
     ...mapGetters([
-      'dataModal',
+      'ACTIVE_MODAL',
     ]),
-    dataKehadiran() {
-      return this.dataModal.value.kehadiran > 0 ? this.dataModal.value.kehadiran : 0;
+    dataKehadiran: {
+      get () {
+        return this.ACTIVE_MODAL.value.kehadiran > 0 ? this.ACTIVE_MODAL.value.kehadiran : 0;
+      },
+      set (newVal) {
+        return newVal
+      }
     }
   },
   methods: {
+    ...mapActions({
+      onChangeModalInput: 'onChangeModalInput',
+    }),
     handleInputChange (event, target) {
-      this.$store.commit('onChangeInput', {
+      this.onChangeModalInput({
         value: event,
         target,
       })

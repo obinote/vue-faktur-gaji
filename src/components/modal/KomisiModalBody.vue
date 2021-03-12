@@ -5,10 +5,12 @@
         <b-col>
           <label for="ubah-nama-komisi" style="font-size: 12px">Nama Komisi</label>
           <b-form-input 
-            v-model="dataModal.value.nama" 
+            v-model="ACTIVE_MODAL.value.nama" 
             placeholder="Nama komisi" 
+            autocomplete="off"
             id="ubah-nama-komisi"
-            @change="handleInputChange($event, 'nama')">
+            debounce="200"
+            @update="handleInputChange($event, 'nama')">
           ></b-form-input>
         </b-col>
       </b-row>
@@ -19,14 +21,15 @@
             <b-form-input 
               v-if="visible === true"
               type="number" 
-              v-model="dataModal.value.nominal" 
+              autocomplete="off"
+              v-model="ACTIVE_MODAL.value.nominal" 
               @blur="onBlurNumber"
               @change="handleInputChange($event, 'nominal')">
             </b-form-input>
             <b-form-input 
               v-if="visible === false"
               type="text" 
-              v-model="numberFormat"
+              v-model="komisiFormated"
               @focus="onFocusText">
             </b-form-input>
           </b-input-group>
@@ -37,7 +40,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from "vuex"
 
 export default {
   name: 'komisi-modal-body',
@@ -47,43 +50,46 @@ export default {
       'temp'    : ''
     }
   },
+  mounted() {
+
+  },
   computed: {
     ...mapGetters([
-      'dataModal',
+      'ACTIVE_MODAL',
+      'formatNumber'
     ]),
-    numberFormat () {
-      let gaji = this.dataModal.value.nominal
+    komisiFormated() {
+      let gaji = this.ACTIVE_MODAL.value.nominal
 
-      if (gaji !== '' || gaji !== undefined || gaji !== 0 || gaji !== '0' || gaji !== null) {
-          return gaji.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      } else {
-          return gaji;
-      }
-    }
+      return this.formatNumber(gaji);
+    },
   },
   methods: {
+    ...mapActions({
+      onChangeModalInput: 'onChangeModalInput',
+    }),
     handleInputChange (event, target) {
-      this.$store.commit('onChangeKomisi', {
-        value: event,
-        target: target,
-        index: this.dataModal.value.index
+      this.onChangeModalInput({
+        value: {val : event, target},
+        target: "komisi",
+        index: this.ACTIVE_MODAL.value.index
       })
     },
     onBlurNumber() {
       this.visible = false;
-      this.temp = this.dataModal.value.nominal;
-      this.$store.commit('onChangeKomisi', {
-        value: this.numberFormat,
-        target: 'nominal',
-        index: this.dataModal.value.index
+      this.temp = this.ACTIVE_MODAL.value.nominal;
+      this.onChangeModalInput({
+        value: {val : this.formatNumber(this.ACTIVE_MODAL.value.nominal), target : 'nominal'},
+        target: ['komisi'],
+        index: this.ACTIVE_MODAL.value.index
       })
     },
     onFocusText() {
       this.visible = true;
-      this.$store.commit('onChangeKomisi', {
-        value: this.temp,
-        target: 'nominal',
-        index: this.dataModal.value.index
+      this.onChangeModalInput({
+        value: {val : this.temp, target : 'nominal'},
+        target: ['komisi'],
+        index: this.ACTIVE_MODAL.value.index
       })
     },
   }
