@@ -1,5 +1,6 @@
 export default {
   rekening : {},
+  afterSave: {},
   pembayaran : {
     listBank : []
   },

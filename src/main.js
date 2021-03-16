@@ -6,9 +6,9 @@ import VueRouter from 'vue-router'
 import store from './store/index'
 import routes from './routes'
 import { BootstrapVueIcons, BootstrapVue, FormPlugin, FormDatepickerPlugin } from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css'
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
+import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 

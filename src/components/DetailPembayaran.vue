@@ -16,7 +16,7 @@
           </router-link>
         </b-col>
         <b-col>
-          <h5 id="header-title">Detail pembayaran</h5>
+          <h5 id="header-title" @click="makeToast()">Detail pembayaran</h5>
         </b-col>
       </b-row>
       <b-row>
@@ -177,13 +177,11 @@
       </b-row>
       <b-row>
         <b-col class="mt-3">
-          <b-button block variant="primary" @click="submitGaji">Submit Gaji</b-button>
+          <b-button block variant="primary" @click="beforeSubmit()">Submit Gaji</b-button>
         </b-col>
       </b-row>
     </b-container>
   </div>
-  <!-- </div>
-  </div> -->
 </template>
 
 <script>
@@ -196,7 +194,8 @@ export default {
       'rekening' : "",
       'tglSelected'  : "",
       'tglFormated' : "",
-      'keterangan'  : ""
+      'keterangan'  : "",
+      'errors': []
     }
   },
   mounted() {
@@ -219,12 +218,46 @@ export default {
       loadRekening: 'loadRekening',
       pembayaran: 'pembayaran'
     }),
+    makeToast() {
+      this.$bvToast.toast(`${this.errors[0]}`, {
+        title: 'Error Message',
+        autoHideDelay: 3000,
+        variant: 'danger',
+      })
+    },
+    beforeSubmit() {
+      this.errors = []
+      if (this.rekening === "") {
+        this.errors.push("Rekening harus dipilih")
+      }
+
+      if (this.tglSelected === "") {
+        this.errors.push("Tanggal tidak boleh kosong")
+      }
+
+      if (this.errors.length > 0) {
+        this.makeToast()
+      } else {
+        this.submitGaji()
+      }
+    },
     submitGaji () {
+      let that = this;
       if (this.tglSelected && this.rekening) {
         this.pembayaran({
           rekening     : JSON.parse(this.rekening),
           tanggal_catat: this.tglSelected,
           keterangan   : this.keterangan
+        }).then(response => {
+          if (response.data.success) {
+            this.$router.push({ name: 'CetakFaktur' })
+          } else {
+            this.errors = Object.values(response.data.messages)
+            this.makeToast()
+          }
+          
+        }).catch(error => {
+          console.log(error)
         })
       }
     },

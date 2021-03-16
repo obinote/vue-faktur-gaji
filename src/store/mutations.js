@@ -73,15 +73,6 @@ export const ON_CHANGE_MODAL_INPUT = (state, { target, value }) => {
     case "komisi":
       state.activeModal.value[value.target] = value.val
       break
-    // case "total_periode":
-    //   state.fakturGaji.total_periode = value
-    //   break
-    // case "gaji":
-    //   let dataId= state.activeModal.id.match(/\d+/)[0];
-    //   let index = state.fakturGaji.pengaturan_gaji.findIndex(gaji => gaji.id === parseInt(dataId))
-
-    //   state.fakturGaji.pengaturan_gaji[index].nominal = value
-    //   break
   }
 }
 
@@ -97,3 +88,6 @@ export const ADD_TANGGUNGAN = (state, payload) => {
 export const HAPUS_TANGGUNGAN = (state, { index }) => {
   state.fakturGaji.tanggungan.splice(index, 1)
 }
+export const SET_AFTERSAVE = (state, { data }) => {
+  state.afterSave = data
+} 

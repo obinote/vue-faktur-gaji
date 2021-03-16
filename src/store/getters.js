@@ -72,3 +72,56 @@ export const detailBorongan = (state) => {
     return `${upah.nominal}${upah.satuan}`
   }
 }
+
+export const AFTERSAVE = (state) => {
+  return state.afterSave
+}
+
+export const SUB_GAJI = (state) => {
+  let subTotal = state.afterSave.pengaturan_gaji.reduce(function(prev, cur) {
+    let nominalGaji = cur.id === 1 ? parseInt(cur.nominal) * state.afterSave.total_periode : cur.nominal * state.afterSave.total_kehadiran
+    
+    return prev + parseInt(nominalGaji)
+  }, 0)
+
+  return subTotal
+}
+
+export const SUB_UPAH = (state) => {
+  let subTotal = state.afterSave.pengaturan_upah.reduce(function(prev, cur) {
+    return prev + parseInt(cur.nominal)
+  }, 0)
+
+  return subTotal
+}
+
+export const SUB_KOMISI = (state) => {
+  let subTotal = state.afterSave.komisi.reduce(function(prev, cur) {
+    return prev + parseInt(cur.nominal)
+  }, 0)
+
+  return subTotal
+}
+
+export const SUB_TANGGUNGAN = (state) => {
+  let subTotal = state.afterSave.tanggungan.reduce(function(prev, cur) {
+    return prev + parseInt(cur.nominal)
+  }, 0)
+
+  return subTotal
+}
+
+export const GAJI_KOTOR = (state, getters) => {
+  return getters.SUB_GAJI + getters.SUB_KOMISI + getters.SUB_UPAH
+}
+
+export const GAJI_BERSIH = (state, getters) => {
+  return getters.GAJI_KOTOR - getters.SUB_TANGGUNGAN
+}
+
+export const itemBorongan = (state) => {
+  return boronganId => {
+    let upah = state.afterSave.pengerjaan_upah.find(upah => upah.pengaturan_upah_id === boronganId);
+    return `${upah.nominal}${upah.satuan}`
+  }
+}

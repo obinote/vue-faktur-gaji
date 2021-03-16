@@ -1,5 +1,6 @@
 import Home from './pages/Home'
 import Pembayaran from './pages/Pembayaran'
+import CetakFaktur from './pages/CetakFaktur'
 
 const routes = [
   {
@@ -11,6 +12,11 @@ const routes = [
     path: '/pembayaran',
     name: 'Pembayaran',
     component: Pembayaran
+  },
+  {
+    path: '/cetak',
+    name: 'CetakFaktur',
+    component: CetakFaktur
   },
 
 ]

@@ -161,10 +161,10 @@
         <!-- Sub Gaji Kotor  ===================================================================================== -->
         <b-col sm="12" class="sub-gaji-kotor cp-3">
           <b-row>
-            <b-col>
+            <b-col class="sub-gaji-kotor">
               <h5>Total Gaji Kotor</h5>
             </b-col>
-            <b-col class="text-right">
+            <b-col class="text-right sub-gaji-kotor">
               <h5>{{`Rp ${this.formatNumber(this.BRUTO_GAJI)}`}}</h5>
             </b-col>
           </b-row>

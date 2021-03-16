@@ -8,6 +8,11 @@
   padding-bottom: 0.5rem;
 }
 
+.cp-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 .header {
   padding-top: 8px;
 }

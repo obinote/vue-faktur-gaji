@@ -6,6 +6,7 @@ export const loadFakturGaji = ({ commit }) => {
   Salary.get()
     .then(response => {
       let { data } = response;
+
       if (data.success === true) {
         commit('INIT_FAKTUR_GAJI', data)
       }
@@ -30,19 +31,22 @@ export const loadRekening =  ({ commit }) =>  {
     })
 }
 
-export const pembayaran = ({ commit, getters }, payload) => {
+export const pembayaran = (contex, payload) => {
   let posted = {
-    ...getters.FAKTUR_GAJI,
+    ...contex.getters.FAKTUR_GAJI,
     ...payload
   }
-
-  Salary.post(posted)
-    .then(response => {
-      console.log(response)
-    })
-    .catch(error => {
-      console.log(error)
-    })
+  return new Promise((resolve, reject) => {
+    Salary.post(posted)
+      .then(response => {
+        contex.commit('SET_AFTERSAVE', response.data)
+        resolve(response)
+      })
+      .catch(error => {
+        console.log(error)
+        reject(error)
+      })
+  })
 }
 
 export const onSubmitModal = ({ commit }, payload) => {
